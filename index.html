@@ -3,43 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Реклама с виджетом</title>
+    <title>Рекламный виджет</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://w.tads.me/widget.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        #tads-container {
+            margin-top: 20px;
+            height: 300px; /* Укажите высоту для виджета */
+            border: 1px solid #ccc;
+            background-color: white;
+            display: none; /* Скрываем контейнер до его инициализации */
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <h1>Добро пожаловать на наш сайт!</h1>
-    <p>Здесь будет отображаться реклама:</p>
-    
-    <div id="tads-container-308"></div> <!-- Замените YOUR_WIDGET_ID на 308 -->
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const initTadsWidget = (id, debug, onShowReward, onClickReward, onAdsNotFound) => {
-                const adController = window.tads.init({ widgetId: id, debug: debug, onShowReward, onClickReward, onAdsNotFound });
-                adController.loadAd()
-                    .then(() => adController.showAd())
-                    .catch((result) => {
-                        console.log(result);
-                    });
-            };
+<h1>Добро пожаловать на наш сайт!</h1>
+<p>Нажмите кнопку ниже, чтобы показать рекламу.</p>
+<button id="show-ad-button">Показать рекламу</button>
 
-            // Callbacks
-            const onShowRewardCallback = (result) => {
-                console.log('Показать рекламу, вознаградить пользователя:', result);
-            };
+<div id="tads-container-308"></div>
 
-            const onClickRewardCallback = (result) => {
-                console.log('Клик по рекламе, вознаградить пользователя:', result);
-            };
+<script>
+    // Инициализация виджета
+    document.addEventListener("DOMContentLoaded", function() {
+        const initTadsWidget = (id, debug, onShowReward, onClickReward, onAdsNotFound) => {
+            const adController = window.tads.init({ widgetId: id, debug: debug, onShowReward, onClickReward, onAdsNotFound });
+            adController.loadAd()
+                .then(() => {
+                    document.getElementById('tads-container-308').style.display = "block"; // Показываем контейнер
+                    return adController.showAd();
+                })
+                .catch(error => {
+                    console.error("Ошибка загрузки рекламы:", error);
+                });
+        };
 
-            const onAdsNotFound = () => {
-                console.log('Нет рекламы для показа');
-            }
-
-            // Инициализация виджета с идентификатором 308
-            initTadsWidget('308', true, onShowRewardCallback, onClickRewardCallback, onAdsNotFound);
+        document.getElementById('show-ad-button').addEventListener('click', function() {
+            initTadsWidget(308, false, null, null, function() {
+                alert("Реклама не найдена.");
+            });
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>
