@@ -134,7 +134,6 @@ self.C3_GetObjectRefTable = function () {
 		C3.ScriptsInEvents.Emenu_Event1_Act13,
 		C3.Plugins.Button.Cnds.OnClicked,
 		C3.ScriptsInEvents.Emenu_Event2_Act1,
-		C3.ScriptsInEvents.Emenu_Event2_Act3,
 		C3.Plugins.Browser.Acts.GoToURLWindow,
 		C3.Plugins.Eponesh_GameScore.Acts.SocialsShare,
 		C3.Plugins.Eponesh_GameScore.Acts.LeaderboardOpen,
