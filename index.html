@@ -15,48 +15,67 @@
         }
         #tads-container {
             margin-top: 20px;
-            height: 300px; /* Укажите высоту для виджета */
+            padding: 20px;
+            background-color: #fff;
             border: 1px solid #ccc;
-            background-color: white;
-            display: none; /* Скрываем контейнер до его инициализации */
+            border-radius: 8px;
         }
         button {
             padding: 10px 15px;
-            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
+    <h1>Рекламный виджет</h1>
+    <div id="tads-container">
+        <button id="your_clickable_selector">Показать рекламу</button>
+    </div>
 
-<h1>Добро пожаловать на наш сайт!</h1>
-<p>Нажмите кнопку ниже, чтобы показать рекламу.</p>
-<button id="show-ad-button">Показать рекламу</button>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const WIDGET_ID = "your_widget_id"; // Замените на ваш ID виджета
 
-<div id="tads-container-308"></div>
+            // Используйте 'true' для разработки и 'false' для производства
+            const IS_DEBUG = true;
 
-<script>
-    // Инициализация виджета
-    document.addEventListener("DOMContentLoaded", function() {
-        const initTadsWidget = (id, debug, onShowReward, onClickReward, onAdsNotFound) => {
-            const adController = window.tads.init({ widgetId: id, debug: debug, onShowReward, onClickReward, onAdsNotFound });
-            adController.loadAd()
-                .then(() => {
-                    document.getElementById('tads-container-308').style.display = "block"; // Показываем контейнер
-                    return adController.showAd();
-                })
-                .catch(error => {
-                    console.error("Ошибка загрузки рекламы:", error);
-                });
-        };
+            // HTML элемент ID, который запускает показ рекламы по клику
+            const btnSelector = "your_clickable_selector";  
 
-        document.getElementById('show-ad-button').addEventListener('click', function() {
-            initTadsWidget(308, false, null, null, function() {
-                alert("Реклама не найдена.");
+            // Обратный вызов для формата REWARDED
+            const onShowRewardCallback = (result) => {
+                console.log('Показать рекламу, наградить пользователя:', result);
+            };
+
+            // Обратный вызов для отсутствия рекламы
+            const onAdsNotFound = () => {
+                console.log('Обратный вызов, который срабатывает, если реклама не найдена');
+            }
+
+            const adController = window.tads.init({
+                widgetId: WIDGET_ID,
+                debug: IS_DEBUG,
+                onShowReward: onShowRewardCallback,
+                onAdsNotFound: onAdsNotFound,
+            });
+
+            // Используйте ваш селектор HTML кнопки или ссылки для getElementById
+            document.getElementById(btnSelector).addEventListener('click', () => {
+                adController
+                    .loadAd()
+                    .then(() => adController.showAd())
+                    .catch((result) => {
+                        console.log(result);
+                    });
             });
         });
-    });
-</script>
-
+    </script>
 </body>
 </html>
