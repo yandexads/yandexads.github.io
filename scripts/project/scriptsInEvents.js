@@ -41,24 +41,32 @@ const scriptsInEvents = {
 
 	async Emenu_Event1_Act12(runtime, localVars)
 	{
-		const script = document.createElement('script');
-		script.src = "https://telegram.org/js/telegram-web-app.js";
-		document.head.appendChild(script);
-	},
-
-	async Emenu_Event1_Act13(runtime, localVars)
-	{
-		const script = document.createElement('script');
-		   script.src = "https://w.tads.me/widget.js";
-		   document.head.appendChild(script);
-		  
+		// Проверяем условие при запуске макета
+		if (условие) {
+		    // Создаем элемент div
+		    var div = document.createElement('div');
+		    div.id = 'tads-container-308';
+		    
+		    // Добавляем элемент в body или в нужный контейнер
+		    document.body.appendChild(div);
+		    
+		    // Здесь можно добавить дополнительный код для инициализации вашего виджета
+		}
 	},
 
 	async Emenu_Event2_Act1(runtime, localVars)
 	{
-		const div = document.createElement('div');
-		   div.id = 'tads-container-308'; // Замените на ваш идентификатор
-		   document.body.appendChild(div);
+		// Проверяем условие при запуске макета
+		if (условие) {
+		    // Создаем элемент div
+		    var div = document.createElement('div');
+		    div.id = 'tads-container-308';
+		    
+		    // Добавляем элемент в body или в нужный контейнер
+		    document.body.appendChild(div);
+		    
+		    // Здесь можно добавить дополнительный код для инициализации вашего виджета
+		}
 	}
 
 };
