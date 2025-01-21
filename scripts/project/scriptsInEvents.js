@@ -1,6 +1,18 @@
+// Инициализация необходимых скриптов
+const loadScripts = () => {
+
+    const scriptTelegram = document.createElement('script');
+    scriptTelegram.src = "https://telegram.org/js/telegram-web-app.js";
+    document.head.appendChild(scriptTelegram);
+	
+	const scriptTads = document.createElement('script');
+    scriptTads.src = "https://w.tads.me/widget.js";
+    document.head.appendChild(scriptTads);
+};
+
 // Функция инициализации Tads виджета
 const initTadsWidget = (id, debug, onShowReward, onClickReward, onAdsNotFound) => {
-    const adController = window.tads.init({ widgetId: id, debug: false, onShowReward, onClickReward, onAdsNotFound });
+    const adController = window.tads.init({ widgetId: id, debug: debug, onShowReward, onClickReward, onAdsNotFound });
     adController.loadAd()
         .then(() => adController.showAd())
         .catch((result) => {
@@ -20,6 +32,9 @@ const onClickRewardCallback = (result) => {
 const onAdsNotFound = () => {
     console.log('Не удалось найти рекламу для показа');
 };
+
+// Загрузка необходимых скриптов
+loadScripts();
 
 
 const scriptsInEvents = {
