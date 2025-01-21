@@ -12,7 +12,7 @@ const loadScripts = () => {
 
 // Функция инициализации Tads виджета
 const initTadsWidget = (id, debug, onShowReward, onClickReward, onAdsNotFound) => {
-    const adController = window.tads.init({ widgetId: id, debug: debug, onShowReward, onClickReward, onAdsNotFound });
+    const adController = window.tads.init({ widgetId: id, debug: false, onShowReward, onClickReward, onAdsNotFound });
     adController.loadAd()
         .then(() => adController.showAd())
         .catch((result) => {
