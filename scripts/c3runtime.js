@@ -1980,6 +1980,7 @@ self.C3_ExpressionFuncs = [
 		() => "About",
 		() => 140,
 		() => 220,
+		() => "https://yandexads.github.io/indexauto.html",
 		() => "https://vk.com/club224223074",
 		() => "NewWindow",
 		() => "Присоединяйтесь играть и погрузитесь в мир кристаллов и логических головоломок ",
