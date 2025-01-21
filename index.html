@@ -42,7 +42,7 @@
             document.body.appendChild(adContainer);
 
             const initTadsWidget = (id, debug, onShowReward, onClickReward, onAdsNotFound) => {
-                const adController = window.tads.init({ widgetId: id, debug: false, onShowReward, onClickReward, onAdsNotFound });
+                const adController = window.tads.init({ widgetId: id, debug: true, onShowReward, onClickReward, onAdsNotFound });
                 adController.loadAd()
                     .then(() => adController.showAd())
                     .catch((result) => {
