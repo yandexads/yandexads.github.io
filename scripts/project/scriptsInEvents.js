@@ -37,13 +37,6 @@ const scriptsInEvents = {
 		    // Обработка ошибок: ничего не делаем или выполняем другие действия
 		    console.error("Ошибка при показе рекламы:", error);
 		}
-	},
-
-	async Emenu_Event3_Act2(runtime, localVars)
-	{
-		function onScriptLoad() {
-		    initTadsWidget(308, true, onShowReward, onClickReward, onAdsNotFound);
-		}
 	}
 
 };
