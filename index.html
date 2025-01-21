@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
+	  <style>
+        /* Стили для контейнера */
+        #tads-container-308 {
+            position: fixed; /* Фиксированное положение */
+            top: 10px; /* Расположение сверху */
+            right: 10px; /* Расположение справа */
+            z-index: 9999; /* Высокий z-index, чтобы быть поверх других элементов */
+            background-color: rgba(255, 255, 255, 0.85); /* Полупрозрачный фон */
+            padding: 20px; /* Отступы */
+            border: 1px solid #ccc; /* Граница */
+            border-radius: 5px; /* Закругленные углы */
+        }
+    </style>
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Автоматическая реклама</title>
@@ -74,7 +87,12 @@ if (location.protocol.substr(0, 4) === "file")
 	<script src="scripts/offlineclient.js" type="module"></script>
 	<script src="scripts/main.js" type="module"></script>
 	<script src="scripts/register-sw.js" type="module"></script>
-<div id="tads-container-308">
+<div id="content">
+        <h1>Основное содержимое страницы</h1>
+        <p>Здесь находится основное содержимое.</p>
+    </div>
+    
+    <div id="tads-container-308">
         <p>Это ваш контейнер, который отображается поверх!</p>
     </div>
 </body> 
