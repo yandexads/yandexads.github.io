@@ -41,61 +41,6 @@ const scriptsInEvents = {
 
 	async Emenu_Event1_Act12(runtime, localVars)
 	{
-		// Событие: On start of layout
-		function onStart() {
-		    const script1 = document.createElement('script');
-		    script1.src = 'https://telegram.org/js/telegram-web-app.js';
-		    script1.onload = onScriptLoad; // После загрузки скрипта вызовите функцию инициализации
-		    document.head.appendChild(script1);
-		    
-		    const script2 = document.createElement('script');
-		    script2.src = 'https://w.tads.me/widget.js';
-		    document.head.appendChild(script2);
-		}
-		
-		function onScriptLoad() {
-		    // Инициализация виджета с id = 308
-		    initTadsWidget(308, true, onShowReward, onClickReward, onAdsNotFound);
-		}
-		
-		// Обработчики колбеков
-		function onShowReward(result) {
-		    console.log('Show ads, reward user:', result);
-		}
-		
-		function onClickReward(result) {
-		    console.log('Click on ad, reward user:', result);
-		}
-		
-		function onAdsNotFound() {
-		    console.log('Callback which calls if no ads found to show');
-		}
-	},
-
-	async Emenu_Event2_Act1(runtime, localVars)
-	{
-		function showAd() {
-		    const adController = window.tads.init({
-		        widgetId: widgetId,
-		        debug: false,
-		        onShowReward: onShowReward,
-		        onClickReward: onClickReward,
-		        onAdsNotFound: onAdsNotFound
-		    });
-		    
-		    adController.loadAd()
-		        .then(() => adController.showAd())
-		        .catch((result) => {
-		            console.log("Ошибка при показе рекламы: ", result);
-		        });
-		}
-		
-		// Вызываем функцию showAd при инициализации или в нужный момент игры
-		showAd();
-	},
-
-	async Emenu_Event4_Act2(runtime, localVars)
-	{
 		// Событие: Настройка
 		function onStart() {
 		    const script1 = document.createElement('script');
@@ -137,6 +82,35 @@ const scriptsInEvents = {
 		// Событие: На клик по спрайту AdTrigger
 		function onAdTriggerClicked() {
 		    showAd();
+		}
+	},
+
+	async Emenu_Event2_Act1(runtime, localVars)
+	{
+		function showAd() {
+		    const adController = window.tads.init({
+		        widgetId: widgetId,
+		        debug: false,
+		        onShowReward: onShowReward,
+		        onClickReward: onClickReward,
+		        onAdsNotFound: onAdsNotFound
+		    });
+		    
+		    adController.loadAd()
+		        .then(() => adController.showAd())
+		        .catch((result) => {
+		            console.log("Ошибка при показе рекламы: ", result);
+		        });
+		}
+		
+		// Вызываем функцию showAd при инициализации или в нужный момент игры
+		showAd();
+	},
+
+	async Emenu_Event3_Act2(runtime, localVars)
+	{
+		function onScriptLoad() {
+		    initTadsWidget(308, true, onShowReward, onClickReward, onAdsNotFound);
 		}
 	}
 
