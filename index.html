@@ -8,8 +8,7 @@
 	<!-- Made with Construct, the game and app creator :: https://www.construct.net -->
 	<meta name="generator" content="Scirra Construct">
 
-<script src="https://w.tads.me/widget.js"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 
 	<link rel="manifest" href="appmanifest.json">
 
@@ -21,7 +20,35 @@
 </head> 
  
 <body>
- <script>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Автоматическая реклама</title>
+    <script src="https://w.tads.me/widget.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  	<title>3inarow</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	
+	<!-- Made with Construct, the game and app creator :: https://www.construct.net -->
+	<meta name="generator" content="Scirra Construct">
+
+
+
+	<link rel="manifest" href="appmanifest.json">
+
+
+	<link rel="stylesheet" href="style.css">
+
+
+
+</head> 
+ 
+<body>
+<div id="tads-container-308"></div>
+
+    <script>
         document.addEventListener("DOMContentLoaded", function() {
             const initTadsWidget = (id, debug, onShowReward, onClickReward, onAdsNotFound) => {
                 const adController = window.tads.init({ widgetId: id, debug: false, onShowReward, onClickReward, onAdsNotFound });
@@ -49,22 +76,30 @@
             initTadsWidget('308', true, onShowRewardCallback, onClickRewardCallback, onAdsNotFound);
         });
     </script>
-<!-- Ваш HTML-контейнер -->
-<div id="tads-container-308"></div>
+	
 
-<style>
-  /* Стили для контейнера */
-  #tads-container-308 {
-    position: fixed; /* Фиксированное положение относительно окна браузера */
-    top: 0; /* Положение сверху */
-    left: 0; /* Положение слева */
-    width: 100%; /* Ширина на весь экран */
-    height: 100%; /* Высота на весь экран */
-    z-index: 9999; /* Высокий z-index для отображения поверх других элементов */
-    pointer-events: none; /* Чтобы клики проходили сквозь контейнер, если это нужно */
-    background-color: rgba(255, 255, 255, 0.8); /* Полупрозрачный фон (при желании) */
-  }
-</style>
+<script>
+if (location.protocol.substr(0, 4) === "file")
+{
+	alert("Web exports won't work until you upload them. (When running on the file: protocol, browsers block many features from working for security reasons.)");
+}
+</script>
+	
+	<noscript>
+		<div id="notSupportedWrap">
+			<h2 id="notSupportedTitle">This content requires JavaScript</h2>
+			<p class="notSupportedMessage">JavaScript appears to be disabled. Please enable it to view this content.</p>
+		</div>
+	</noscript>
+	<script src="scripts/modernjscheck.js"></script>
+	<script src="scripts/supportcheck.js"></script>
+	<script src="scripts/offlineclient.js" type="module"></script>
+	<script src="scripts/main.js" type="module"></script>
+	<script src="scripts/register-sw.js" type="module"></script>
+
+</body> 
+</html>
+
 	
 
 <script>
