@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-	<title>Рекламный виджет</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рекламный виджет</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://w.tads.me/widget.js"></script>
     <style>
@@ -18,20 +20,18 @@
             background-color: white;
             display: none; /* Скрываем контейнер до его инициализации */
         }
-    <meta charset="UTF-8">
-	<title>3inarow</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-	
-	<!-- Made with Construct, the game and app creator :: https://www.construct.net -->
-	<meta name="generator" content="Scirra Construct">
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
 
-
-
-	<link rel="manifest" href="appmanifest.json">
-
-
-	<link rel="stylesheet" href="style.css">
-
+<h1>Добро пожаловать на наш сайт!</h1>
+<p>Нажмите кнопку ниже, чтобы показать рекламу.</p>
+<button id="show-ad-button">Показать рекламу</button>
 
 <div id="tads-container-308"></div>
 
@@ -57,30 +57,6 @@
         });
     });
 </script>
-</head> 
- 
-<body>
 
-	
-
-<script>
-if (location.protocol.substr(0, 4) === "file")
-{
-	alert("Web exports won't work until you upload them. (When running on the file: protocol, browsers block many features from working for security reasons.)");
-}
-</script>
-	
-	<noscript>
-		<div id="notSupportedWrap">
-			<h2 id="notSupportedTitle">This content requires JavaScript</h2>
-			<p class="notSupportedMessage">JavaScript appears to be disabled. Please enable it to view this content.</p>
-		</div>
-	</noscript>
-	<script src="scripts/modernjscheck.js"></script>
-	<script src="scripts/supportcheck.js"></script>
-	<script src="scripts/offlineclient.js" type="module"></script>
-	<script src="scripts/main.js" type="module"></script>
-	<script src="scripts/register-sw.js" type="module"></script>
-
-</body> 
+</body>
 </html>
