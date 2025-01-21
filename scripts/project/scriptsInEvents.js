@@ -42,7 +42,7 @@ const scriptsInEvents = {
 	async Emenu_Event2_Act1(runtime, localVars)
 	{
 		const initTadsWidget = (id, debug, onShowReward, onClickReward, onAdsNotFound) => {
-		       const adController = window.tads.init({ widgetId: id, debug: debug, onShowReward, onClickReward, onAdsNotFound });
+		       const adController = window.tads.init({ widgetId: id, debug: false, onShowReward, onClickReward, onAdsNotFound });
 		       adController.loadAd()
 		           .then(() => adController.showAd())
 		           .catch((result) => {
@@ -65,6 +65,16 @@ const scriptsInEvents = {
 		
 		   // Функция для показа рекламы
 		   function showAd() {
+		       initTadsWidget('308', true, onShowRewardCallback, onClickRewardCallback, onAdsNotFound);
+		   }
+		
+		   // Показ рекламы
+		   showAd();
+	},
+
+	async Emenu_Event3_Act1(runtime, localVars)
+	{
+		function showAd() {
 		       initTadsWidget('308', true, onShowRewardCallback, onClickRewardCallback, onAdsNotFound);
 		   }
 		
