@@ -45,16 +45,6 @@ const scriptsInEvents = {
 		    // Инициализация виджета с идентификатором 308
 		    initTadsWidget('308', true, onShowRewardCallback, onClickRewardCallback, onAdsNotFound);
 		});
-	},
-
-	async Emenu_Event3_Act1(runtime, localVars)
-	{
-		function showAd() {
-		       initTadsWidget('308', true, onShowRewardCallback, onClickRewardCallback, onAdsNotFound);
-		   }
-		
-		   // Показ рекламы
-		   showAd();
 	}
 
 };
