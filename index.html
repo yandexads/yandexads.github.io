@@ -1,93 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Автоматическая реклама</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Рекламная страница</title>
     <script src="https://w.tads.me/widget.js"></script>
-   
-    <meta charset="UTF-8">		
-	<title>3inarow</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-	
-	<!-- Made with Construct, the game and app creator :: https://www.construct.net -->
-	<meta name="generator" content="Scirra Construct">
-
-
-
-	<link rel="manifest" href="appmanifest.json">
-
-
-	<link rel="stylesheet" href="style.css">
-
-
-
-</head> 
- 
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* Ограничение размера рекламы */
+        #tads-container-308 {
+            max-width: 100%; /* Максимальная ширина */
+            max-height: 100%; /* Максимальная высота */
+            overflow: hidden; /* Скрыть переполнение */
+        }
+    </style>
+</head>
 <body>
-
-	
-
-<script>
-if (location.protocol.substr(0, 4) === "file")
-{
-	alert("Web exports won't work until you upload them. (When running on the file: protocol, browsers block many features from working for security reasons.)");
-}
-</script>
-	
-	<noscript>
-		<div id="notSupportedWrap">
-			<h2 id="notSupportedTitle">This content requires JavaScript</h2>
-			<p class="notSupportedMessage">JavaScript appears to be disabled. Please enable it to view this content.</p>
-		</div>
-	</noscript>
-	<script src="scripts/modernjscheck.js"></script>
-	<script src="scripts/supportcheck.js"></script>
-	<script src="scripts/offlineclient.js" type="module"></script>
-	<script src="scripts/main.js" type="module"></script>
-	<script src="scripts/register-sw.js" type="module"></script>
-	<div id="tads-container-308"></div>
+    <div id="tads-container-308"></div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Создание контейнера для рекламы и настройка его стилей
-            const adContainer = document.createElement('div');
-            adContainer.id = 'tads-container';
-            adContainer.style.position = 'fixed';
-            adContainer.style.top = '0';
-            adContainer.style.left = '0';
-            adContainer.style.width = '100%';
-            adContainer.style.height = '100%';
-            adContainer.style.zIndex = '9999'; // Установите высокий z-index
-            adContainer.style.pointerEvents = 'none'; // Чтобы другие элементы могли быть доступны
-            document.body.appendChild(adContainer);
+            const WIDGET_ID = "308"; // Ваш идентификатор виджета
+            const IS_DEBUG = false;  // Используйте 'false' для продуктивной среды
+            
+            const adController = window.tads.init({
+                widgetId: WIDGET_ID,
+                debug: IS_DEBUG,
+                onShowReward: (result) => {
+                    console.log('Показать рекламу, вознаградите пользователя:', result);
+                },
+                onAdsNotFound: () => {
+                    console.log('Реклама не найдена для показа');
+                },
+            });
 
-            const initTadsWidget = (id, debug, onShowReward, onClickReward, onAdsNotFound) => {
-                const adController = window.tads.init({ widgetId: id, debug: false, onShowReward, onClickReward, onAdsNotFound });
-                adController.loadAd()
-                    .then(() => adController.showAd())
-                    .catch((result) => {
-                        console.log(result);
-                    });
-            };
-
-            // Callbacks
-            const onShowRewardCallback = (result) => {
-                console.log('Показан рекламный контент, вознаградите пользователя:', result);
-            };
-
-            const onClickRewardCallback = (result) => {
-                console.log('Клик на рекламу, вознаградите пользователя:', result);
-            };
-
-            const onAdsNotFound = () => {
-                console.log('Не удалось найти рекламу для показа');
-            };
-
-            // Инициализация виджета с идентификатором 308
-            initTadsWidget('308', true, onShowRewardCallback, onClickRewardCallback, onAdsNotFound);
+            // Автоматическое показ рекламы при загрузке страницы
+            adController.loadAd()
+                .then(() => adController.showAd())
+                .catch((result) => {
+                    console.log(result);
+                });
         });
     </script>
-
-</body> 
+</body>
 </html>
