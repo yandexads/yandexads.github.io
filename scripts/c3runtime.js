@@ -1976,8 +1976,6 @@ self.C3_ExpressionFuncs = [
 			return () => (v0.GetValue() + ".unlocked");
 		},
 		() => "levels",
-		() => "opacity",
-		() => "0",
 		() => "menu",
 		() => "About",
 		() => 140,
