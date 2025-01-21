@@ -130,6 +130,7 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Eponesh_GameScore.Acts.AdsRefreshSticky,
 		C3.Plugins.Eponesh_GameScore.Acts.GameStart,
 		C3.Plugins.Button.Acts.SetPos,
+		C3.Plugins.System.Acts.SetLayerHTML,
 		C3.Plugins.Button.Cnds.OnClicked,
 		C3.Plugins.Browser.Acts.GoToURLWindow,
 		C3.Plugins.Eponesh_GameScore.Acts.SocialsShare,
