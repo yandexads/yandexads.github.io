@@ -1,4 +1,25 @@
+// Функция инициализации Tads виджета
+const initTadsWidget = (id, debug, onShowReward, onClickReward, onAdsNotFound) => {
+    const adController = window.tads.init({ widgetId: id, debug: false, onShowReward, onClickReward, onAdsNotFound });
+    adController.loadAd()
+        .then(() => adController.showAd())
+        .catch((result) => {
+            console.log(result);
+        });
+};
 
+// Callbacks для рекламы
+const onShowRewardCallback = (result) => {
+    console.log('Показан рекламный контент, вознаградите пользователя:', result);
+};
+
+const onClickRewardCallback = (result) => {
+    console.log('Клик на рекламу, вознаградите пользователя:', result);
+};
+
+const onAdsNotFound = () => {
+    console.log('Не удалось найти рекламу для показа');
+};
 
 
 const scriptsInEvents = {
@@ -41,35 +62,10 @@ const scriptsInEvents = {
 
 	async Emenu_Event2_Act1(runtime, localVars)
 	{
-		const initTadsWidget = (id, debug, onShowReward, onClickReward, onAdsNotFound) => {
-		       const adController = window.tads.init({ widgetId: id, debug: false, onShowReward, onClickReward, onAdsNotFound });
-		       adController.loadAd()
-		           .then(() => adController.showAd())
-		           .catch((result) => {
-		               console.log(result);
-		           });
-		   };
-		
-		   // Callbacks
-		   const onShowRewardCallback = (result) => {
-		       console.log('Показан рекламный контент, вознаградите пользователя:', result);
-		   };
-		
-		   const onClickRewardCallback = (result) => {
-		       console.log('Клик на рекламу, вознаградите пользователя:', result);
-		   };
-		
-		   const onAdsNotFound = () => {
-		       console.log('Не удалось найти рекламу для показа');
-		   };
-		
-		   // Функция для показа рекламы
-		   function showAd() {
-		       initTadsWidget('308', true, onShowRewardCallback, onClickRewardCallback, onAdsNotFound);
-		   }
-		
-		   // Показ рекламы
-		   showAd();
+		document.addEventListener("DOMContentLoaded", function() {
+		    // Инициализация виджета с идентификатором 308
+		    initTadsWidget('308', true, onShowRewardCallback, onClickRewardCallback, onAdsNotFound);
+		});
 	},
 
 	async Emenu_Event3_Act1(runtime, localVars)
