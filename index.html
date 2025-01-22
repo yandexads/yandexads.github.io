@@ -4,12 +4,23 @@
     <meta charset="UTF-8">
     <title>3inarow</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-    <!-- Made with Construct, the game and app creator :: https://www.construct.net -->
-    <meta name="generator" content="Scirra Construct">
     <link rel="manifest" href="appmanifest.json">
     <link rel="stylesheet" href="style.css">
     <script src="https://w.tads.me/widget.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* Стили для рекламы */
+        #tads-container-308 {
+            position: absolute;
+            width: 100%;
+            height: 100px;
+            bottom: 0;
+            left: 0;
+            z-index: 999;
+            background-color: lightgray; /* Светло-серый фон */
+            display: none; /* Скрыть по умолчанию */
+        }
+    </style>
 </head>
 <body>
 
@@ -28,8 +39,8 @@
         <script src="scripts/register-sw.js" type="module"></script>
     </div>
 
-    <!-- Контейнер рекламы (поместите его в конец body, чтобы он был сверху) -->
-    <div id="tads-container-308" style="position: absolute; width: 100%; height: 100px; bottom: 0; left: 0; z-index: 999;"></div>
+    <!-- Контейнер рекламы -->
+    <div id="tads-container-308"></div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -47,20 +58,27 @@
                 }
             });
 
-            // Функция для загрузки и отображения рекламы
             function loadAndShowAd() {
                 adController.loadAd()
-                    .then(() => adController.showAd())
-                    .catch((error) => {
-                        console.log('Failed to show ad:', error);
-                    });
+                .then(() => {
+                    document.getElementById('tads-container-308').style.display = 'block'; // Показать рекламу
+                    adController.showAd();
+                    setTimeout(hideAd, 20000); // Скрыть рекламу через 20 секунд
+                })
+                .catch((error) => {
+                    console.log('Failed to show ad:', error);
+                });
+            }
+
+            function hideAd() {
+                document.getElementById('tads-container-308').style.display = 'none'; // Скрыть рекламу
+                setTimeout(loadAndShowAd, 1000); // Загрузить рекламу заново через 1 секунду
             }
 
             // Загрузить рекламу через 4 секунды
             setTimeout(loadAndShowAd, 4000);
-            // Обновлять рекламу каждые 20 секунд
-            setInterval(loadAndShowAd, 20000);
         });
     </script>
+
 </body>
 </html>
