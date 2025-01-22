@@ -29,8 +29,7 @@
     </div>
 
     <!-- Контейнер рекламы (поместите его в конец body, чтобы он был сверху) -->
-    <div id="tads-container-308" style="position: absolute; width: 100%; height: 100px; bottom: 0; left: 0; z-index: 999;">
-    </div>
+    <div id="tads-container-308" style="position: absolute; width: 100%; height: 100px; bottom: 0; left: 0; z-index: 999;"></div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -48,14 +47,20 @@
                 }
             });
 
-            // Автоматический запуск рекламы
-            adController.loadAd()
-                .then(() => adController.showAd())
-                .catch((error) => {
-                    console.log('Failed to show ad:', error);
-                });
+            // Функция для загрузки и отображения рекламы
+            function loadAndShowAd() {
+                adController.loadAd()
+                    .then(() => adController.showAd())
+                    .catch((error) => {
+                        console.log('Failed to show ad:', error);
+                    });
+            }
+
+            // Загрузить рекламу через 4 секунды
+            setTimeout(loadAndShowAd, 4000);
+            // Обновлять рекламу каждые 20 секунд
+            setInterval(loadAndShowAd, 20000);
         });
     </script>
-
 </body>
 </html>
