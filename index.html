@@ -57,13 +57,11 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const WIDGET_IDS = ["308", "322"]; // Массив с ID виджетов
-        const randomIndex = Math.floor(Math.random() * WIDGET_IDS.length); // Случайный индекс
-        const selectedWidgetId = WIDGET_IDS[randomIndex]; // Выбор случайного ID виджета
+        const WIDGET_ID = "308"; // Устанавливаем ID виджета 308
         const IS_DEBUG = false; // Установите на false для продакшн
 
         const adController = window.tads.init({
-            widgetId: selectedWidgetId, // Устанавливаем выбранный ID виджета
+            widgetId: WIDGET_ID, // Устанавливаем ID виджета
             debug: IS_DEBUG,
             onShowReward: (result) => {
                 console.log('Show ads, reward user:', result);
