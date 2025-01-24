@@ -10,7 +10,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         /* Стили для рекламы */
-        #tads-container-308 {
+        #tads-container-322 {
             position: fixed; /* Изменено на fixed, чтобы оставался снизу */
             width: 100%; /* Ширина 100% для выравнивания по ширине устройства */
             height: 100px;
@@ -53,11 +53,11 @@
 </div>
 
 <!-- Контейнер рекламы -->
-<div id="tads-container-308"></div>
+<div id="tads-container-322"></div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const WIDGET_ID = "308"; // Идентификатор виджета
+        const WIDGET_ID = "322"; // Изменено на ID виджета 322
         const IS_DEBUG = false; // Установите на false для продакшн
 
         const adController = window.tads.init({
@@ -74,7 +74,7 @@
         function loadAndShowAd() {
             adController.loadAd()
                 .then(() => {
-                    document.getElementById('tads-container-308').style.display = 'block'; // Показать рекламу
+                    document.getElementById('tads-container-322').style.display = 'block'; // Показать рекламу
                     adController.showAd();
                     setTimeout(hideAd, 30000); // Скрыть рекламу через 30 секунд
                 })
@@ -84,12 +84,11 @@
         }
 
         function hideAd() {
-            document.getElementById('tads-container-308').style.display = 'none'; // Скрыть рекламу
-            setTimeout(loadAndShowAd, 25000); // Загрузить рекламу заново через 25 секунд
+            document.getElementById('tads-container-322').style.display = 'none'; // Скрыть рекламу
         }
 
-        // Загрузить рекламу через 4 секунды
-        setTimeout(loadAndShowAd, 4000);
+        // Загрузить рекламу при загрузке страницы
+        loadAndShowAd();
     });
 </script>
 
