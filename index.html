@@ -10,7 +10,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         /* Стили для рекламы */
-        #tads-container-322 {
+        #tads-container {
             position: fixed; /* Изменено на fixed, чтобы оставался снизу */
             width: 100%; /* Ширина 100% для выравнивания по ширине устройства */
             height: 100px;
@@ -53,15 +53,17 @@
 </div>
 
 <!-- Контейнер рекламы -->
-<div id="tads-container-322"></div>
+<div id="tads-container"></div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const WIDGET_ID = "322"; // Изменено на ID виджета 322
+        const WIDGET_IDS = ["308", "322"]; // Массив с ID виджетов
+        const randomIndex = Math.floor(Math.random() * WIDGET_IDS.length); // Случайный индекс
+        const selectedWidgetId = WIDGET_IDS[randomIndex]; // Выбор случайного ID виджета
         const IS_DEBUG = false; // Установите на false для продакшн
 
         const adController = window.tads.init({
-            widgetId: WIDGET_ID,
+            widgetId: selectedWidgetId, // Устанавливаем выбранный ID виджета
             debug: IS_DEBUG,
             onShowReward: (result) => {
                 console.log('Show ads, reward user:', result);
@@ -74,21 +76,15 @@
         function loadAndShowAd() {
             adController.loadAd()
                 .then(() => {
-                    document.getElementById('tads-container-322').style.display = 'block'; // Показать рекламу
+                    document.getElementById('tads-container').style.display = 'block'; // Показать рекламу
                     adController.showAd();
-                    setTimeout(hideAd, 30000); // Скрыть рекламу через 30 секунд
                 })
                 .catch((error) => {
                     console.log('Failed to show ad:', error);
                 });
         }
 
-        function hideAd() {
-            document.getElementById('tads-container-322').style.display = 'none'; // Скрыть рекламу
-        }
-
-        // Загрузить рекламу при загрузке страницы
-        loadAndShowAd();
+        loadAndShowAd(); // Загрузить рекламу при загрузке страницы
     });
 </script>
 
