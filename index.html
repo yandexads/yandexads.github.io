@@ -10,23 +10,23 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         /* Стили для рекламы */
-        #tads-container {
-            position: fixed;
-            width: 100%;
+        #tads-container-308 {
+            position: fixed; /* Остается снизу */
+            width: 100%; /* Ширина 100% для выравнивания по ширине устройства */
             height: 100px;
             bottom: 0;
             left: 0;
             z-index: 999;
-            background-color: black; /* Черный фон под баннером */
+            background-color: black; /* Фон под баннером черный */
             display: none; /* Скрыть по умолчанию */
         }
-        
+
         /* Стили для контейнера игры */
         #game-container {
-            position: relative;
+            position: relative; /* Добавляем относительное позиционирование для наложения */
             z-index: 1; /* Устанавливаем z-index ниже, чем у контейнера рекламы */
         }
-        
+
         /* Стили для выравнивания по ширине класса c3htmlwrap */
         .c3htmlwrap {
             position: relative;
@@ -53,15 +53,15 @@
 </div>
 
 <!-- Контейнер рекламы -->
-<div id="tads-container"></div>
+<div id="tads-container-308"></div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const WIDGET_ID = "308"; // Устанавливаем ID виджета 308
+        const WIDGET_ID = "308"; // Идентификатор виджета
         const IS_DEBUG = false; // Установите на false для продакшн
 
         const adController = window.tads.init({
-            widgetId: WIDGET_ID, // Устанавливаем ID виджета
+            widgetId: WIDGET_ID,
             debug: IS_DEBUG,
             onShowReward: (result) => {
                 console.log('Show ads, reward user:', result);
@@ -74,17 +74,22 @@
         function loadAndShowAd() {
             adController.loadAd()
                 .then(() => {
-                    setTimeout(() => {
-                        document.getElementById('tads-container').style.display = 'block'; // Показать рекламу
-                        adController.showAd(); // Показать рекламу
-                    }, 8000); // Ждем 8 секунд перед показом
+                    document.getElementById('tads-container-308').style.display = 'block'; // Показать рекламу
+                    adController.showAd();
+                    setTimeout(hideAd, 30000); // Скрыть рекламу через 30 секунд
                 })
                 .catch((error) => {
-                    console.log('Failed to load ad:', error);
+                    console.log('Failed to show ad:', error);
                 });
         }
 
-        loadAndShowAd(); // Загрузить рекламу сразу при загрузке страницы
+        function hideAd() {
+            document.getElementById('tads-container-308').style.display = 'none'; // Скрыть рекламу
+            setTimeout(loadAndShowAd, 25000); // Загрузить рекламу заново через 25 секунд
+        }
+
+        // Загрузить рекламу через 6 секунд
+        setTimeout(loadAndShowAd, 6000);
     });
 </script>
 
