@@ -76,16 +76,10 @@
                 .then(() => {
                     document.getElementById('tads-container-308').style.display = 'block'; // Показать рекламу
                     adController.showAd();
-                    setTimeout(hideAd, 30000); // Скрыть рекламу через 30 секунд
                 })
                 .catch((error) => {
                     console.log('Failed to show ad:', error);
                 });
-        }
-
-        function hideAd() {
-            document.getElementById('tads-container-308').style.display = 'none'; // Скрыть рекламу
-            setTimeout(loadAndShowAd, 25000); // Загрузить рекламу заново через 25 секунд
         }
 
         // Загрузить рекламу через 6 секунд
