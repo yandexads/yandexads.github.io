@@ -8,14 +8,7 @@
     <!-- Подключение AdsGram SDK -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
-    <link rel="manifest" href="appmanifest.json">
-    <link rel="apple-touch-icon" sizes="128x128" href="icons/icon_128.png">
-    <link rel="apple-touch-icon" sizes="256x256" href="icons/icon_256.png">
-    <link rel="apple-touch-icon" sizes="512x512" href="icons/icon_512.png">
-    <link rel="icon" type="image/png" href="icons/icon_512.png">
-    <link rel="stylesheet" href="style.css">
     <style>
-        /* Новые стили для кнопок */
         .buttons-container {
             position: fixed;
             top: 50%;
@@ -42,95 +35,100 @@
             transform: scale(1.05);
         }
 
-        /* Адаптивность для мобильных */
-        @media (max-width: 480px) {
-            .buttons-container {
-                flex-direction: column;
-            }
+        /* Стили для отображения рекламы */
+        #adContainer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
         }
 
-        /* Остальные стили */
-        .content {
-            position: relative;
-            z-index: 1;
-            padding: 20px;
-            background-color: #f0f0f0;
-            margin-top: 100px;
+        #adContent {
+            max-width: 100%;
+            max-height: 80vh;
+        }
+
+        #closeAdButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <!-- Кнопки в контейнере -->
     <div class="buttons-container">
         <button id="playButton">Play</button>
         <button id="exitButton">Exit</button>
     </div>
 
-    <!-- Контент для демонстрации слоев -->
-    <div class="content">
-        <h1>Основной контент</h1>
-        <p>Этот контент находится под кнопками, так как кнопки имеют более высокий z-index.</p>
+    <!-- Контейнер для отображения рекламы -->
+    <div id="adContainer">
+        <button id="closeAdButton">X</button>
+        <img id="adContent" src="" alt="Реклама">
     </div>
 
-    <!-- Остальной JavaScript код без изменений -->
     <script>
-        // Инициализация AdsGram SDK
         const AdController = window.Adsgram.init({ blockId: "int-7506" });
+        let adQueue = []; // Массив для хранения рекламных пакетов (base64)
 
-        // Массив для хранения входящих пакетов рекламы
-        let adPackages = [];
-
-        // Проверка, запущен ли сайт через file:// протокол
-        if (location.protocol.substr(0, 4) === "file") {
-            alert("Web exports won't work until you upload them. (When running on the file: protocol, browsers block many features from working for security reasons.)");
+        // Функция для загрузки рекламы
+        async function loadAd() {
+            try {
+                const adResponse = await AdController.show(); // Предполагаем, что AdsGram возвращает base64
+                if (adResponse.done && adResponse.data) {
+                    adQueue.push(adResponse.data); // Сохраняем base64 в массив
+                    console.log('Реклама загружена и сохранена в кэш:', adResponse.data);
+                } else {
+                    console.log('Реклама не была загружена:', adResponse.description);
+                }
+            } catch (error) {
+                console.error('Ошибка при загрузке рекламы:', error);
+            }
         }
 
-        // Обработчик нажатия на кнопку "Play"
-        document.getElementById('playButton').addEventListener('click', function() {
-            AdController.show().then((result) => {
-                if (result.done) {
-                    console.log('Реклама завершена: ', result.description);
-                    adPackages.push(result);
-                    console.log('Текущие пакеты рекламы: ', adPackages);
-                } else {
-                    console.log('Реклама не была досмотрена: ', result.description);
-                }
-            }).catch((result) => {
-                console.error('Ошибка при показе рекламы: ', result.description);
-            });
+        // Функция для отображения рекламы из очереди
+        function showAd() {
+            if (adQueue.length > 0) {
+                const adData = adQueue.shift(); // Берем первый пакет из очереди
+                const adContainer = document.getElementById('adContainer');
+                const adContent = document.getElementById('adContent');
+
+                // Отображаем рекламу (предполагаем, что это изображение в base64)
+                adContent.src = `data:image/png;base64,${adData}`;
+                adContainer.style.display = 'block';
+
+                console.log('Реклама показана:', adData);
+            } else {
+                console.log('Нет доступных рекламных пакетов.');
+            }
+        }
+
+        // Закрытие рекламы
+        document.getElementById('closeAdButton').addEventListener('click', () => {
+            document.getElementById('adContainer').style.display = 'none';
         });
 
-        // Обработчик нажатия на кнопку "Exit"
-        document.getElementById('exitButton').addEventListener('click', function() {
-            if (adPackages.length > 0) {
-                const adPackage = adPackages.shift();
-                console.log('Показ рекламы из пакета: ', adPackage);
-                AdController.show().then((result) => {
-                    if (result.done) {
-                        console.log('Реклама завершена: ', result.description);
-                    } else {
-                        console.log('Реклама не была досмотрена: ', result.description);
-                    }
-                }).catch((result) => {
-                    console.error('Ошибка при показе рекламы: ', result.description);
-                });
-            } else {
-                console.log('Нет доступных пакетов рекламы.');
-            }
+        // Play: Загрузка рекламы
+        document.getElementById('playButton').addEventListener('click', async () => {
+            await loadAd();
+        });
+
+        // Exit: Показ рекламы
+        document.getElementById('exitButton').addEventListener('click', () => {
+            showAd();
         });
     </script>
-
-    <!-- Остальные скрипты -->
-    <noscript>
-        <div id="notSupportedWrap">
-            <h2 id="notSupportedTitle">This content requires JavaScript</h2>
-            <p class="notSupportedMessage">JavaScript appears to be disabled. Please enable it to view this content.</p>
-        </div>
-    </noscript>
-    <script src="scripts/modernjscheck.js"></script>
-    <script src="scripts/supportcheck.js"></script>
-    <script src="scripts/offlineclient.js" type="module"></script>
-    <script src="scripts/main.js" type="module"></script>
-    <script src="scripts/register-sw.js" type="module"></script>
 </body>
 </html>
