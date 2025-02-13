@@ -15,12 +15,9 @@
     <link rel="icon" type="image/png" href="icons/icon_512.png">
     <link rel="stylesheet" href="style.css">
     <style>
-        #playButton {
+        #playButton, #exitButton {
             position: fixed;
             top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
             padding: 10px 20px;
             font-size: 16px;
             color: white;
@@ -29,14 +26,24 @@
             border-radius: 5px;
             cursor: pointer;
         }
+        #playButton {
+            left: 40%;
+        }
+        #exitButton {
+            left: 60%;
+        }
     </style>
 </head>
 <body>
     <button id="playButton">Play</button>
+    <button id="exitButton">Exit</button>
 
     <script>
         // Инициализация AdsGram SDK
         const AdController = window.Adsgram.init({ blockId: "int-7506" });
+
+        // Массив для хранения входящих пакетов рекламы
+        let adPackages = [];
 
         // Проверка, запущен ли сайт через file:// протокол
         if (location.protocol.substr(0, 4) === "file") {
@@ -49,6 +56,9 @@
                 if (result.done) {
                     // Пользователь досмотрел рекламу до конца или закрыл её
                     console.log('Реклама завершена: ', result.description);
+                    // Сохраняем пакет рекламы в массив
+                    adPackages.push(result);
+                    console.log('Текущие пакеты рекламы: ', adPackages);
                 } else {
                     // Пользователь не досмотрел рекламу
                     console.log('Реклама не была досмотрена: ', result.description);
@@ -57,6 +67,28 @@
                 // Ошибка при показе рекламы
                 console.error('Ошибка при показе рекламы: ', result.description);
             });
+        });
+
+        // Обработчик нажатия на кнопку "Exit"
+        document.getElementById('exitButton').addEventListener('click', function() {
+            if (adPackages.length > 0) {
+                // Берем первый пакет из массива
+                const adPackage = adPackages.shift(); // Удаляем пакет из массива
+                console.log('Показ рекламы из пакета: ', adPackage);
+
+                // Показываем рекламу из пакета
+                AdController.show().then((result) => {
+                    if (result.done) {
+                        console.log('Реклама завершена: ', result.description);
+                    } else {
+                        console.log('Реклама не была досмотрена: ', result.description);
+                    }
+                }).catch((result) => {
+                    console.error('Ошибка при показе рекламы: ', result.description);
+                });
+            } else {
+                console.log('Нет доступных пакетов рекламы.');
+            }
         });
     </script>
 
