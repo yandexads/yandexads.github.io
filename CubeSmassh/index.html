@@ -46,11 +46,14 @@
             background-color: rgba(0, 0, 0, 0.8);
             padding: 20px;
             border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
         }
 
         #adContent {
-            max-width: 100%;
-            max-height: 80vh;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
         }
 
         #closeAdButton {
@@ -76,7 +79,7 @@
     <!-- Контейнер для отображения рекламы -->
     <div id="adContainer">
         <button id="closeAdButton">X</button>
-        <img id="adContent" src="" alt="Реклама">
+        <video id="adContent" controls></video>
     </div>
 
     <script>
@@ -93,9 +96,11 @@
 
             isAdLoading = true;
             try {
-                const adResponse = await AdController.preload(); // Используем preload для загрузки без показа
+                // Запрашиваем рекламу
+                const adResponse = await AdController.show();
                 if (adResponse.done && adResponse.data) {
-                    adQueue.push(adResponse.data); // Сохраняем base64 в массив
+                    // Сохраняем base64 в массив, не показывая рекламу
+                    adQueue.push(adResponse.data);
                     console.log('Реклама загружена и сохранена в кэш:', adResponse.data);
                 } else {
                     console.log('Реклама не была загружена:', adResponse.description);
@@ -114,9 +119,12 @@
                 const adContainer = document.getElementById('adContainer');
                 const adContent = document.getElementById('adContent');
 
-                // Отображаем рекламу (предполагаем, что это изображение в base64)
-                adContent.src = `data:image/png;base64,${adData}`;
+                // Отображаем рекламу как видео
+                adContent.src = `data:video/mp4;base64,${adData}`;
                 adContainer.style.display = 'block';
+
+                // Автовоспроизведение видео
+                adContent.play();
 
                 console.log('Реклама показана:', adData);
             } else {
@@ -126,6 +134,9 @@
 
         // Закрытие рекламы
         document.getElementById('closeAdButton').addEventListener('click', () => {
+            const adContent = document.getElementById('adContent');
+            adContent.pause(); // Останавливаем видео
+            adContent.src = ''; // Очищаем источник
             document.getElementById('adContainer').style.display = 'none';
         });
 
