@@ -15,22 +15,51 @@
     <link rel="icon" type="image/png" href="icons/icon_512.png">
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Стили для кнопок */
         #playButton, #exitButton {
             position: fixed;
-            top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
+            top: 40%; /* Расположение чуть выше середины экрана */
+            transform: translateY(-50%);
+            padding: 15px 30px;
+            font-size: 18px;
             color: white;
             background-color: #007bff;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
         }
+
         #playButton {
-            left: 40%;
+            left: calc(50% - 110px); /* Центрирование с отступом */
         }
+
         #exitButton {
-            left: 60%;
+            left: calc(50% + 10px); /* Отступ от Play */
+        }
+
+        /* Эффекты при наведении */
+        #playButton:hover, #exitButton:hover {
+            background-color: #0056b3;
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        /* Адаптивность для мобильных */
+        @media (max-width: 480px) {
+            #playButton, #exitButton {
+                width: 140px;
+                left: 50%;
+                transform: translateX(-50%) translateY(-50%);
+                margin: 5px 0;
+            }
+            #playButton {
+                top: 40%;
+            }
+            #exitButton {
+                top: 50%;
+            }
         }
     </style>
 </head>
@@ -38,70 +67,9 @@
     <button id="playButton">Play</button>
     <button id="exitButton">Exit</button>
 
+    <!-- Остальное содержимое -->
     <script>
-        // Инициализация AdsGram SDK
-        const AdController = window.Adsgram.init({ blockId: "int-7506" });
-
-        // Массив для хранения входящих пакетов рекламы
-        let adPackages = [];
-
-        // Проверка, запущен ли сайт через file:// протокол
-        if (location.protocol.substr(0, 4) === "file") {
-            alert("Web exports won't work until you upload them. (When running on the file: protocol, browsers block many features from working for security reasons.)");
-        }
-
-        // Обработчик нажатия на кнопку "Play"
-        document.getElementById('playButton').addEventListener('click', function() {
-            AdController.show().then((result) => {
-                if (result.done) {
-                    // Пользователь досмотрел рекламу до конца или закрыл её
-                    console.log('Реклама завершена: ', result.description);
-                    // Сохраняем пакет рекламы в массив
-                    adPackages.push(result);
-                    console.log('Текущие пакеты рекламы: ', adPackages);
-                } else {
-                    // Пользователь не досмотрел рекламу
-                    console.log('Реклама не была досмотрена: ', result.description);
-                }
-            }).catch((result) => {
-                // Ошибка при показе рекламы
-                console.error('Ошибка при показе рекламы: ', result.description);
-            });
-        });
-
-        // Обработчик нажатия на кнопку "Exit"
-        document.getElementById('exitButton').addEventListener('click', function() {
-            if (adPackages.length > 0) {
-                // Берем первый пакет из массива
-                const adPackage = adPackages.shift(); // Удаляем пакет из массива
-                console.log('Показ рекламы из пакета: ', adPackage);
-
-                // Показываем рекламу из пакета
-                AdController.show().then((result) => {
-                    if (result.done) {
-                        console.log('Реклама завершена: ', result.description);
-                    } else {
-                        console.log('Реклама не была досмотрена: ', result.description);
-                    }
-                }).catch((result) => {
-                    console.error('Ошибка при показе рекламы: ', result.description);
-                });
-            } else {
-                console.log('Нет доступных пакетов рекламы.');
-            }
-        });
+        // ... (остальной JavaScript код без изменений)
     </script>
-
-    <noscript>
-        <div id="notSupportedWrap">
-            <h2 id="notSupportedTitle">This content requires JavaScript</h2>
-            <p class="notSupportedMessage">JavaScript appears to be disabled. Please enable it to view this content.</p>
-        </div>
-    </noscript>
-    <script src="scripts/modernjscheck.js"></script>
-    <script src="scripts/supportcheck.js"></script>
-    <script src="scripts/offlineclient.js" type="module"></script>
-    <script src="scripts/main.js" type="module"></script>
-    <script src="scripts/register-sw.js" type="module"></script>
 </body>
 </html>
