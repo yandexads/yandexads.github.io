@@ -82,11 +82,18 @@
     <script>
         const AdController = window.Adsgram.init({ blockId: "int-7506" });
         let adQueue = []; // Массив для хранения рекламных пакетов (base64)
+        let isAdLoading = false; // Флаг для отслеживания загрузки рекламы
 
-        // Функция для загрузки рекламы
+        // Функция для загрузки рекламы без показа
         async function loadAd() {
+            if (isAdLoading) {
+                console.log('Реклама уже загружается.');
+                return;
+            }
+
+            isAdLoading = true;
             try {
-                const adResponse = await AdController.show(); // Предполагаем, что AdsGram возвращает base64
+                const adResponse = await AdController.preload(); // Используем preload для загрузки без показа
                 if (adResponse.done && adResponse.data) {
                     adQueue.push(adResponse.data); // Сохраняем base64 в массив
                     console.log('Реклама загружена и сохранена в кэш:', adResponse.data);
@@ -95,6 +102,8 @@
                 }
             } catch (error) {
                 console.error('Ошибка при загрузке рекламы:', error);
+            } finally {
+                isAdLoading = false;
             }
         }
 
