@@ -33,6 +33,22 @@
             max-width: 100%; /* Ограничение максимальной ширины */
             margin: 0 auto; /* Центрирование */
         }
+
+        /* Стили для кнопки Play */
+        #play-button {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000; /* Убедитесь, что кнопка поверх всех слоев */
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -54,6 +70,9 @@
 
 <!-- Контейнер рекламы -->
 <div id="tads-container-308"></div>
+
+<!-- Кнопка Play -->
+<button id="play-button">Play</button>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -84,8 +103,9 @@
 
         // Загрузить рекламу через 6 секунд
         setTimeout(loadAndShowAd, 6000);
-    });
-</script>
 
-</body>
-</html>
+        // Обработчик нажатия на кнопку Play
+        document.getElementById('play-button').addEventListener('click', function () {
+            AdController.show().then((result) => {
+                // Пользователь посмотрел рекламу до конца или закрыл её в interstitial формате
+                if (
