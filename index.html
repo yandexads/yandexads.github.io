@@ -75,8 +75,10 @@
 		let isAdContainerReady = false;
 		let retryCount = 0;
 		const MAX_RETRIES = 3;
-		const LOAD_TIMEOUT = 15000; // Увеличиваем таймаут до 15 секунд
+		const LOAD_TIMEOUT = 20000; // Увеличиваем таймаут до 20 секунд
 		let loadTimeoutId = null;
+		let logoCheckAttempts = 0;
+		const MAX_LOGO_CHECK_ATTEMPTS = 40; // 20 секунд с интервалом 500мс
 
 		const adsNotFoundCallback = () => {
 			console.log('No ads found to show');
@@ -120,6 +122,31 @@
 			}
 		}
 
+		function checkLogoLoaded() {
+			const container = document.getElementById('tads-container-308');
+			if (!container) return false;
+
+			// Ищем логотип по различным селекторам
+			const logoSelectors = [
+				'img[src*="logo"]',
+				'img[src*="brand"]',
+				'img[src*="icon"]',
+				'.logo img',
+				'.brand img',
+				'.icon img'
+			];
+
+			for (const selector of logoSelectors) {
+				const logo = container.querySelector(selector);
+				if (logo) {
+					console.log('Found logo element:', selector);
+					return logo.complete && logo.naturalHeight !== 0;
+				}
+			}
+
+			return false;
+		}
+
 		function checkAdContent() {
 			const container = document.getElementById('tads-container-308');
 			if (!container) return false;
@@ -134,12 +161,18 @@
 				return false;
 			}
 
+			// Проверяем загрузку логотипа
+			if (!checkLogoLoaded()) {
+				console.log('Logo not fully loaded yet');
+				return false;
+			}
+
 			// Проверяем, что все изображения загружены
 			const images = container.querySelectorAll('img');
 			const imagesLoaded = Array.from(images).every(img => img.complete && img.naturalHeight !== 0);
 
 			if (!imagesLoaded) {
-				console.log('Images not fully loaded yet');
+				console.log('Some images not fully loaded yet');
 				return false;
 			}
 
@@ -190,11 +223,18 @@
 				if (container) {
 					// Проверяем полную загрузку контента
 					if (!checkAdContent()) {
-						console.log('Waiting for ad content to fully load...');
+						logoCheckAttempts++;
+						if (logoCheckAttempts >= MAX_LOGO_CHECK_ATTEMPTS) {
+							console.log('Max logo check attempts reached');
+							handleAdError();
+							return;
+						}
+						console.log('Waiting for ad content to fully load... (attempt ' + logoCheckAttempts + '/' + MAX_LOGO_CHECK_ATTEMPTS + ')');
 						setTimeout(checkAndShowAd, 500);
 						return;
 					}
 
+					console.log('All ad content loaded successfully');
 					container.classList.remove('loading');
 					container.style.display = 'block';
 					
