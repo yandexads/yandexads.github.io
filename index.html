@@ -26,14 +26,19 @@
 			display: none;
 			opacity: 0;
 			transition: opacity 0.3s ease-in-out;
-			min-height: 50px; /* Минимальная высота для контейнера */
+			min-height: 50px;
+			pointer-events: none; /* Отключаем взаимодействие пока реклама не готова */
 		}
 		#tads-container-308.ready {
 			opacity: 1;
+			pointer-events: auto; /* Включаем взаимодействие когда реклама готова */
 		}
 		#tads-container-308.loading {
 			display: block;
 			opacity: 0.5;
+		}
+		#tads-container-308.error {
+			display: none;
 		}
 	</style>
 </head> 
@@ -70,6 +75,8 @@
 		let isAdContainerReady = false;
 		let retryCount = 0;
 		const MAX_RETRIES = 3;
+		const LOAD_TIMEOUT = 15000; // Увеличиваем таймаут до 15 секунд
+		let loadTimeoutId = null;
 
 		const adsNotFoundCallback = () => {
 			console.log('No ads found to show');
@@ -79,8 +86,17 @@
 				loadAd();
 			} else {
 				console.log('Max retries reached, giving up');
+				handleAdError();
 			}
 		};
+
+		function handleAdError() {
+			const container = document.getElementById('tads-container-308');
+			if (container) {
+				container.classList.add('error');
+				container.classList.remove('loading', 'ready');
+			}
+		}
 
 		function initializeAd() {
 			try {
@@ -104,6 +120,32 @@
 			}
 		}
 
+		function checkAdContent() {
+			const container = document.getElementById('tads-container-308');
+			if (!container) return false;
+
+			// Проверяем наличие контента рекламы
+			const hasContent = container.children.length > 0 && 
+				container.querySelector('a') !== null && 
+				container.querySelector('img') !== null;
+
+			if (!hasContent) {
+				console.log('Ad content not fully loaded yet');
+				return false;
+			}
+
+			// Проверяем, что все изображения загружены
+			const images = container.querySelectorAll('img');
+			const imagesLoaded = Array.from(images).every(img => img.complete && img.naturalHeight !== 0);
+
+			if (!imagesLoaded) {
+				console.log('Images not fully loaded yet');
+				return false;
+			}
+
+			return true;
+		}
+
 		function loadAd() {
 			if (!adController) {
 				if (!initializeAd()) {
@@ -113,7 +155,13 @@
 
 			const container = document.getElementById('tads-container-308');
 			if (container) {
+				container.classList.remove('error');
 				container.classList.add('loading');
+			}
+
+			// Очищаем предыдущий таймаут
+			if (loadTimeoutId) {
+				clearTimeout(loadTimeoutId);
 			}
 
 			adController.loadAd()
@@ -126,6 +174,13 @@
 					console.log('Error loading ad:', err);
 					adsNotFoundCallback();
 				});
+
+			// Устанавливаем новый таймаут
+			loadTimeoutId = setTimeout(() => {
+				console.log('Ad load timeout reached');
+				handleAdError();
+				adsNotFoundCallback();
+			}, LOAD_TIMEOUT);
 		}
 
 		// Function to check if ad is ready to be shown
@@ -133,12 +188,20 @@
 			if (isAdFullyLoaded && isAdContainerReady) {
 				const container = document.getElementById('tads-container-308');
 				if (container) {
+					// Проверяем полную загрузку контента
+					if (!checkAdContent()) {
+						console.log('Waiting for ad content to fully load...');
+						setTimeout(checkAndShowAd, 500);
+						return;
+					}
+
 					container.classList.remove('loading');
 					container.style.display = 'block';
-					// Добавляем небольшую задержку перед показом для гарантии полной загрузки
+					
+					// Увеличиваем задержку перед показом
 					setTimeout(() => {
 						container.classList.add('ready');
-					}, 100);
+					}, 500);
 				}
 			}
 		}
