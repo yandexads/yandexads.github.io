@@ -19,12 +19,17 @@
     <style>
         #tads-container-308 {
             position: fixed;
-            bottom: 8px;
+            bottom: 8mm;
             left: 0;
             right: 0;
             z-index: 9999;
+            background-color: #000000;
             opacity: 0;
             transition: opacity 0.3s ease;
+            min-height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head> 
@@ -54,20 +59,21 @@ if (location.protocol.substr(0, 4) === "file")
     <div id="tads-container-308"></div>
     
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Задержка перед инициализацией рекламы
+        window.addEventListener('load', () => {
             setTimeout(() => {
+                const adsContainer = document.getElementById('tads-container-308');
+                
                 const adsNotFoundCallback = () => {
                     console.log('No ads found to show');
+                    adsContainer.style.display = 'none';
                 };
 
                 const adController = window.tads.init({
                     widgetId: 308,
-                    debug: false,
+                    debug: true, // Включаем debug для отслеживания проблем
                     onShowReward: (adId) => {
                         console.log('Show ad:', adId);
-                        // Показываем контейнер после полной загрузки рекламы
-                        document.getElementById('tads-container-308').style.opacity = '1';
+                        adsContainer.style.opacity = '1';
                     },
                     onClickReward: (adId) => {
                         console.log('Click on ad:', adId);
@@ -76,12 +82,18 @@ if (location.protocol.substr(0, 4) === "file")
                 });
 
                 adController.loadAd()
-                    .then(() => adController.showAd())
+                    .then(() => {
+                        console.log('Ad loaded successfully');
+                        return adController.showAd();
+                    })
+                    .then(() => {
+                        console.log('Ad shown successfully');
+                    })
                     .catch((err) => {
-                        console.log(err);
+                        console.error('Ad error:', err);
                         adsNotFoundCallback();
                     });
-            }, 2000); // 2 секунды задержки перед инициализацией
+            }, 2000);
         });
     </script>
 
