@@ -8,17 +8,37 @@
 	<!-- Made with Construct, the game and app creator :: https://www.construct.net -->
 	<meta name="generator" content="Scirra Construct">
 
+
+
 	<link rel="manifest" href="appmanifest.json">
+
+
 	<link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://w.tads.me/widget.js"></script>
+    <style>
+        #tads-container-308 {
+            position: fixed;
+            bottom: 8px;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+    </style>
 </head> 
  
 <body>
-	<script>
-		if (location.protocol.substr(0, 4) === "file")
-		{
-			alert("Web exports won't work until you upload them. (When running on the file: protocol, browsers block many features from working for security reasons.)");
-		}
-	</script>
+
+	
+
+<script>
+if (location.protocol.substr(0, 4) === "file")
+{
+	alert("Web exports won't work until you upload them. (When running on the file: protocol, browsers block many features from working for security reasons.)");
+}
+</script>
 	
 	<noscript>
 		<div id="notSupportedWrap">
@@ -26,12 +46,44 @@
 			<p class="notSupportedMessage">JavaScript appears to be disabled. Please enable it to view this content.</p>
 		</div>
 	</noscript>
-
-	<!-- Game scripts -->
 	<script src="scripts/modernjscheck.js"></script>
 	<script src="scripts/supportcheck.js"></script>
 	<script src="scripts/offlineclient.js" type="module"></script>
 	<script src="scripts/main.js" type="module"></script>
 	<script src="scripts/register-sw.js" type="module"></script>
+    <div id="tads-container-308"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Задержка перед инициализацией рекламы
+            setTimeout(() => {
+                const adsNotFoundCallback = () => {
+                    console.log('No ads found to show');
+                };
+
+                const adController = window.tads.init({
+                    widgetId: 308,
+                    debug: false,
+                    onShowReward: (adId) => {
+                        console.log('Show ad:', adId);
+                        // Показываем контейнер после полной загрузки рекламы
+                        document.getElementById('tads-container-308').style.opacity = '1';
+                    },
+                    onClickReward: (adId) => {
+                        console.log('Click on ad:', adId);
+                    },
+                    onAdsNotFound: adsNotFoundCallback
+                });
+
+                adController.loadAd()
+                    .then(() => adController.showAd())
+                    .catch((err) => {
+                        console.log(err);
+                        adsNotFoundCallback();
+                    });
+            }, 2000); // 2 секунды задержки перед инициализацией
+        });
+    </script>
+
 </body> 
 </html>
