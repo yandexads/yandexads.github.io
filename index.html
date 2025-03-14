@@ -11,10 +11,6 @@
 	<link rel="manifest" href="appmanifest.json">
 	<link rel="stylesheet" href="style.css">
 
-	<!-- Tads.me and Telegram Web App scripts -->
-	<script src="https://w.tads.me/widget.js"></script>
-	<script src="https://telegram.org/js/telegram-web-app.js"></script>
-
 	<style>
 		#tads-container-308 {
 			position: fixed;
@@ -68,203 +64,229 @@
 	<script src="scripts/main.js" type="module"></script>
 	<script src="scripts/register-sw.js" type="module"></script>
 
-	<!-- Tads.me initialization -->
+	<!-- Tads.me and Telegram Web App scripts -->
 	<script>
-		let adController = null;
-		let isAdFullyLoaded = false;
-		let isAdContainerReady = false;
-		let retryCount = 0;
-		const MAX_RETRIES = 3;
-		const LOAD_TIMEOUT = 20000; // Увеличиваем таймаут до 20 секунд
-		let loadTimeoutId = null;
-		let logoCheckAttempts = 0;
-		const MAX_LOGO_CHECK_ATTEMPTS = 40; // 20 секунд с интервалом 500мс
-
-		const adsNotFoundCallback = () => {
-			console.log('No ads found to show');
-			if (retryCount < MAX_RETRIES) {
-				retryCount++;
-				console.log(`Retrying ad load (attempt ${retryCount}/${MAX_RETRIES})...`);
-				loadAd();
-			} else {
-				console.log('Max retries reached, giving up');
-				handleAdError();
-			}
-		};
-
-		function handleAdError() {
-			const container = document.getElementById('tads-container-308');
-			if (container) {
-				container.classList.add('error');
-				container.classList.remove('loading', 'ready');
-			}
+		// Функция для загрузки внешних скриптов
+		function loadScript(src) {
+			return new Promise((resolve, reject) => {
+				const script = document.createElement('script');
+				script.src = src;
+				script.onload = resolve;
+				script.onerror = reject;
+				document.head.appendChild(script);
+			});
 		}
 
-		function initializeAd() {
+		// Функция инициализации рекламы
+		async function initializeAds() {
 			try {
-				adController = window.tads.init({
-					widgetId: 308,
-					debug: false,
-					onShowReward: (adId) => {
-						console.log('Show ad:', adId);
-						isAdFullyLoaded = true;
-						checkAndShowAd();
-					},
-					onClickReward: (adId) => {
-						console.log('Click on ad:', adId);
-					},
-					onAdsNotFound: adsNotFoundCallback
-				});
-				return true;
-			} catch (error) {
-				console.error('Error initializing Tads.me:', error);
-				return false;
-			}
-		}
+				// Загружаем скрипты рекламы после загрузки игры
+				await Promise.all([
+					loadScript("https://w.tads.me/widget.js"),
+					loadScript("https://telegram.org/js/telegram-web-app.js")
+				]);
 
-		function checkLogoLoaded() {
-			const container = document.getElementById('tads-container-308');
-			if (!container) return false;
+				let adController = null;
+				let isAdFullyLoaded = false;
+				let isAdContainerReady = false;
+				let retryCount = 0;
+				const MAX_RETRIES = 3;
+				const LOAD_TIMEOUT = 20000;
+				let loadTimeoutId = null;
+				let logoCheckAttempts = 0;
+				const MAX_LOGO_CHECK_ATTEMPTS = 40;
 
-			// Ищем логотип по различным селекторам
-			const logoSelectors = [
-				'img[src*="logo"]',
-				'img[src*="brand"]',
-				'img[src*="icon"]',
-				'.logo img',
-				'.brand img',
-				'.icon img'
-			];
+				const adsNotFoundCallback = () => {
+					console.log('No ads found to show');
+					if (retryCount < MAX_RETRIES) {
+						retryCount++;
+						console.log(`Retrying ad load (attempt ${retryCount}/${MAX_RETRIES})...`);
+						loadAd();
+					} else {
+						console.log('Max retries reached, giving up');
+						handleAdError();
+					}
+				};
 
-			for (const selector of logoSelectors) {
-				const logo = container.querySelector(selector);
-				if (logo) {
-					console.log('Found logo element:', selector);
-					return logo.complete && logo.naturalHeight !== 0;
+				function handleAdError() {
+					const container = document.getElementById('tads-container-308');
+					if (container) {
+						container.classList.add('error');
+						container.classList.remove('loading', 'ready');
+					}
 				}
-			}
 
-			return false;
-		}
-
-		function checkAdContent() {
-			const container = document.getElementById('tads-container-308');
-			if (!container) return false;
-
-			// Проверяем наличие контента рекламы
-			const hasContent = container.children.length > 0 && 
-				container.querySelector('a') !== null && 
-				container.querySelector('img') !== null;
-
-			if (!hasContent) {
-				console.log('Ad content not fully loaded yet');
-				return false;
-			}
-
-			// Проверяем загрузку логотипа
-			if (!checkLogoLoaded()) {
-				console.log('Logo not fully loaded yet');
-				return false;
-			}
-
-			// Проверяем, что все изображения загружены
-			const images = container.querySelectorAll('img');
-			const imagesLoaded = Array.from(images).every(img => img.complete && img.naturalHeight !== 0);
-
-			if (!imagesLoaded) {
-				console.log('Some images not fully loaded yet');
-				return false;
-			}
-
-			return true;
-		}
-
-		function loadAd() {
-			if (!adController) {
-				if (!initializeAd()) {
-					return;
+				function initializeAd() {
+					try {
+						adController = window.tads.init({
+							widgetId: 308,
+							debug: false,
+							onShowReward: (adId) => {
+								console.log('Show ad:', adId);
+								isAdFullyLoaded = true;
+								checkAndShowAd();
+							},
+							onClickReward: (adId) => {
+								console.log('Click on ad:', adId);
+							},
+							onAdsNotFound: adsNotFoundCallback
+						});
+						return true;
+					} catch (error) {
+						console.error('Error initializing Tads.me:', error);
+						return false;
+					}
 				}
-			}
 
-			const container = document.getElementById('tads-container-308');
-			if (container) {
-				container.classList.remove('error');
-				container.classList.add('loading');
-			}
+				function checkLogoLoaded() {
+					const container = document.getElementById('tads-container-308');
+					if (!container) return false;
 
-			// Очищаем предыдущий таймаут
-			if (loadTimeoutId) {
-				clearTimeout(loadTimeoutId);
-			}
+					// Ищем логотип по различным селекторам
+					const logoSelectors = [
+						'img[src*="logo"]',
+						'img[src*="brand"]',
+						'img[src*="icon"]',
+						'.logo img',
+						'.brand img',
+						'.icon img'
+					];
 
-			adController.loadAd()
-				.then(() => {
-					console.log('Ad loaded successfully');
-					adController.showAd();
-					checkContainerReady();
-				})
-				.catch((err) => {
-					console.log('Error loading ad:', err);
-					adsNotFoundCallback();
-				});
-
-			// Устанавливаем новый таймаут
-			loadTimeoutId = setTimeout(() => {
-				console.log('Ad load timeout reached');
-				handleAdError();
-				adsNotFoundCallback();
-			}, LOAD_TIMEOUT);
-		}
-
-		// Function to check if ad is ready to be shown
-		function checkAndShowAd() {
-			if (isAdFullyLoaded && isAdContainerReady) {
-				const container = document.getElementById('tads-container-308');
-				if (container) {
-					// Проверяем полную загрузку контента
-					if (!checkAdContent()) {
-						logoCheckAttempts++;
-						if (logoCheckAttempts >= MAX_LOGO_CHECK_ATTEMPTS) {
-							console.log('Max logo check attempts reached');
-							handleAdError();
-							return;
+					for (const selector of logoSelectors) {
+						const logo = container.querySelector(selector);
+						if (logo) {
+							console.log('Found logo element:', selector);
+							return logo.complete && logo.naturalHeight !== 0;
 						}
-						console.log('Waiting for ad content to fully load... (attempt ' + logoCheckAttempts + '/' + MAX_LOGO_CHECK_ATTEMPTS + ')');
-						setTimeout(checkAndShowAd, 500);
-						return;
 					}
 
-					console.log('All ad content loaded successfully');
-					container.classList.remove('loading');
-					container.style.display = 'block';
-					
-					// Увеличиваем задержку перед показом
-					setTimeout(() => {
-						container.classList.add('ready');
-					}, 500);
+					return false;
 				}
+
+				function checkAdContent() {
+					const container = document.getElementById('tads-container-308');
+					if (!container) return false;
+
+					// Проверяем наличие контента рекламы
+					const hasContent = container.children.length > 0 && 
+						container.querySelector('a') !== null && 
+						container.querySelector('img') !== null;
+
+					if (!hasContent) {
+						console.log('Ad content not fully loaded yet');
+						return false;
+					}
+
+					// Проверяем загрузку логотипа
+					if (!checkLogoLoaded()) {
+						console.log('Logo not fully loaded yet');
+						return false;
+					}
+
+					// Проверяем, что все изображения загружены
+					const images = container.querySelectorAll('img');
+					const imagesLoaded = Array.from(images).every(img => img.complete && img.naturalHeight !== 0);
+
+					if (!imagesLoaded) {
+						console.log('Some images not fully loaded yet');
+						return false;
+					}
+
+					return true;
+				}
+
+				function loadAd() {
+					if (!adController) {
+						if (!initializeAd()) {
+							return;
+						}
+					}
+
+					const container = document.getElementById('tads-container-308');
+					if (container) {
+						container.classList.remove('error');
+						container.classList.add('loading');
+					}
+
+					// Очищаем предыдущий таймаут
+					if (loadTimeoutId) {
+						clearTimeout(loadTimeoutId);
+					}
+
+					adController.loadAd()
+						.then(() => {
+							console.log('Ad loaded successfully');
+							adController.showAd();
+							checkContainerReady();
+						})
+						.catch((err) => {
+							console.log('Error loading ad:', err);
+							adsNotFoundCallback();
+						});
+
+					// Устанавливаем новый таймаут
+					loadTimeoutId = setTimeout(() => {
+						console.log('Ad load timeout reached');
+						handleAdError();
+						adsNotFoundCallback();
+					}, LOAD_TIMEOUT);
+				}
+
+				// Function to check if ad is ready to be shown
+				function checkAndShowAd() {
+					if (isAdFullyLoaded && isAdContainerReady) {
+						const container = document.getElementById('tads-container-308');
+						if (container) {
+							// Проверяем полную загрузку контента
+							if (!checkAdContent()) {
+								logoCheckAttempts++;
+								if (logoCheckAttempts >= MAX_LOGO_CHECK_ATTEMPTS) {
+									console.log('Max logo check attempts reached');
+									handleAdError();
+									return;
+								}
+								console.log('Waiting for ad content to fully load... (attempt ' + logoCheckAttempts + '/' + MAX_LOGO_CHECK_ATTEMPTS + ')');
+								setTimeout(checkAndShowAd, 500);
+								return;
+							}
+
+							console.log('All ad content loaded successfully');
+							container.classList.remove('loading');
+							container.style.display = 'block';
+							
+							// Увеличиваем задержку перед показом
+							setTimeout(() => {
+								container.classList.add('ready');
+							}, 500);
+						}
+					}
+				}
+
+				// Function to check if container is ready
+				function checkContainerReady() {
+					const container = document.getElementById('tads-container-308');
+					if (container) {
+						isAdContainerReady = true;
+						checkAndShowAd();
+					}
+				}
+
+				// Начинаем загрузку рекламы после небольшой задержки
+				setTimeout(() => {
+					checkContainerReady();
+					loadAd();
+				}, 2000); // Задержка 2 секунды после загрузки игры
+
+			} catch (error) {
+				console.error('Error initializing ads:', error);
 			}
 		}
 
-		// Function to check if container is ready
-		function checkContainerReady() {
-			const container = document.getElementById('tads-container-308');
-			if (container) {
-				isAdContainerReady = true;
-				checkAndShowAd();
-			}
-		}
-
-		// Start loading ad when page is ready
+		// Запускаем инициализацию рекламы после загрузки страницы
 		window.addEventListener('load', () => {
-			checkContainerReady();
-			loadAd();
+			// Даем время на загрузку игры
+			setTimeout(initializeAds, 1000);
 		});
-
-		// Fallback initialization
-		if (document.readyState === 'complete') {
-			loadAd();
-		}
 	</script>
 </body> 
 </html>
