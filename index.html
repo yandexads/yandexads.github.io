@@ -8,27 +8,46 @@
 	<!-- Made with Construct, the game and app creator :: https://www.construct.net -->
 	<meta name="generator" content="Scirra Construct">
 
-
-
 	<link rel="manifest" href="appmanifest.json">
-
-
 	<link rel="stylesheet" href="style.css">
 
+	<!-- Tads.me and Telegram Web App scripts -->
+	<script src="https://w.tads.me/widget.js"></script>
+	<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-
+	<style>
+		#tads-container-308 {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			background-color: #000;
+			z-index: 999999;
+			display: none;
+			opacity: 0;
+			transition: opacity 0.3s ease-in-out;
+			min-height: 50px; /* Минимальная высота для контейнера */
+		}
+		#tads-container-308.ready {
+			opacity: 1;
+		}
+		#tads-container-308.loading {
+			display: block;
+			opacity: 0.5;
+		}
+	</style>
 </head> 
  
 <body>
+	<!-- Tads.me container -->
+	<div id="tads-container-308"></div>
 
-	
-
-<script>
-if (location.protocol.substr(0, 4) === "file")
-{
-	alert("Web exports won't work until you upload them. (When running on the file: protocol, browsers block many features from working for security reasons.)");
-}
-</script>
+	<script>
+		if (location.protocol.substr(0, 4) === "file")
+		{
+			alert("Web exports won't work until you upload them. (When running on the file: protocol, browsers block many features from working for security reasons.)");
+		}
+	</script>
 	
 	<noscript>
 		<div id="notSupportedWrap">
@@ -36,11 +55,113 @@ if (location.protocol.substr(0, 4) === "file")
 			<p class="notSupportedMessage">JavaScript appears to be disabled. Please enable it to view this content.</p>
 		</div>
 	</noscript>
+
+	<!-- Game scripts -->
 	<script src="scripts/modernjscheck.js"></script>
 	<script src="scripts/supportcheck.js"></script>
 	<script src="scripts/offlineclient.js" type="module"></script>
 	<script src="scripts/main.js" type="module"></script>
 	<script src="scripts/register-sw.js" type="module"></script>
 
+	<!-- Tads.me initialization -->
+	<script>
+		let adController = null;
+		let isAdFullyLoaded = false;
+		let isAdContainerReady = false;
+		let retryCount = 0;
+		const MAX_RETRIES = 3;
+
+		const adsNotFoundCallback = () => {
+			console.log('No ads found to show');
+			if (retryCount < MAX_RETRIES) {
+				retryCount++;
+				console.log(`Retrying ad load (attempt ${retryCount}/${MAX_RETRIES})...`);
+				loadAd();
+			} else {
+				console.log('Max retries reached, giving up');
+			}
+		};
+
+		function initializeAd() {
+			try {
+				adController = window.tads.init({
+					widgetId: 308,
+					debug: false,
+					onShowReward: (adId) => {
+						console.log('Show ad:', adId);
+						isAdFullyLoaded = true;
+						checkAndShowAd();
+					},
+					onClickReward: (adId) => {
+						console.log('Click on ad:', adId);
+					},
+					onAdsNotFound: adsNotFoundCallback
+				});
+				return true;
+			} catch (error) {
+				console.error('Error initializing Tads.me:', error);
+				return false;
+			}
+		}
+
+		function loadAd() {
+			if (!adController) {
+				if (!initializeAd()) {
+					return;
+				}
+			}
+
+			const container = document.getElementById('tads-container-308');
+			if (container) {
+				container.classList.add('loading');
+			}
+
+			adController.loadAd()
+				.then(() => {
+					console.log('Ad loaded successfully');
+					adController.showAd();
+					checkContainerReady();
+				})
+				.catch((err) => {
+					console.log('Error loading ad:', err);
+					adsNotFoundCallback();
+				});
+		}
+
+		// Function to check if ad is ready to be shown
+		function checkAndShowAd() {
+			if (isAdFullyLoaded && isAdContainerReady) {
+				const container = document.getElementById('tads-container-308');
+				if (container) {
+					container.classList.remove('loading');
+					container.style.display = 'block';
+					// Добавляем небольшую задержку перед показом для гарантии полной загрузки
+					setTimeout(() => {
+						container.classList.add('ready');
+					}, 100);
+				}
+			}
+		}
+
+		// Function to check if container is ready
+		function checkContainerReady() {
+			const container = document.getElementById('tads-container-308');
+			if (container) {
+				isAdContainerReady = true;
+				checkAndShowAd();
+			}
+		}
+
+		// Start loading ad when page is ready
+		window.addEventListener('load', () => {
+			checkContainerReady();
+			loadAd();
+		});
+
+		// Fallback initialization
+		if (document.readyState === 'complete') {
+			loadAd();
+		}
+	</script>
 </body> 
 </html>
