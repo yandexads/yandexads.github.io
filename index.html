@@ -94,7 +94,7 @@ if (location.protocol.substr(0, 4) === "file")
             // Инициализация рекламы
             const adController = window.tads.init({
                 widgetId: 308,
-                debug: true, // Включаем debug для отладки
+                debug: false, // Включаем debug для отладки
                 onShowReward: (adId) => {
                     console.log('Show ad:', adId);
                 },
