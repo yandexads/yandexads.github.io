@@ -32,19 +32,13 @@
             right: 0;
             z-index: 9999;
             background-color: #000000;
-            opacity: 0;
-            transition: opacity 0.5s ease;
+            opacity: 1; /* Изменено: сразу видимый */
             min-height: 50px;
-            display: none; /* Изначально скрыт */
-            justify-content: center;
-            align-items: center;
+            display: block; /* Изменено: сразу отображается */
+            text-align: center;
             width: 100%;
             max-width: 100vw;
             -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
         }
         
         #tads-container-308 img {
@@ -86,148 +80,47 @@ if (location.protocol.substr(0, 4) === "file")
     <div id="tads-container-308"></div>
     
     <script>
-        window.addEventListener('load', () => {
-            // Увеличиваем начальную задержку для старых устройств
-            setTimeout(() => {
-                const adsContainer = document.getElementById('tads-container-308');
-                
-                // Полифилл для старых браузеров
-                if (!Element.prototype.matches) {
-                    Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+        window.addEventListener('load', function() {
+            const adsContainer = document.getElementById('tads-container-308');
+            
+            // Простой коллбэк для отсутствия рекламы
+            const adsNotFoundCallback = () => {
+                console.log('No ads found to show');
+                if (adsContainer) {
+                    adsContainer.style.display = 'none';
                 }
+            };
 
-                const adsNotFoundCallback = () => {
-                    console.log('No ads found to show');
-                    if (adsContainer) {
-                        adsContainer.style.display = 'none';
-                    }
-                };
+            // Инициализация рекламы
+            const adController = window.tads.init({
+                widgetId: 308,
+                debug: true, // Включаем debug для отладки
+                onShowReward: (adId) => {
+                    console.log('Show ad:', adId);
+                },
+                onClickReward: (adId) => {
+                    console.log('Click on ad:', adId);
+                },
+                onAdsNotFound: adsNotFoundCallback
+            });
 
-                // Функция для принудительной перезагрузки изображения
-                const reloadImage = (img) => {
-                    const src = img.src;
-                    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-                    setTimeout(() => {
-                        img.src = src + '?v=' + new Date().getTime();
-                    }, 50);
-                };
-
-                // Функция проверки загрузки изображений с поддержкой старых устройств
-                const checkImagesAndShow = (container) => {
-                    if (!container) return;
-
-                    const images = container.getElementsByTagName('img');
-                    let loadedImages = 0;
-                    const totalImages = images.length;
-
-                    // Функция показа контейнера
-                    const showContainer = () => {
-                        try {
-                            container.style.display = 'flex';
-                            // Используем таймаут для плавного появления
-                            setTimeout(() => {
-                                container.style.opacity = '1';
-                            }, 100);
-
-                            // Делаем все элементы внутри контейнера кликабельными
-                            const clickableElements = container.querySelectorAll('a, button, [role="button"]');
-                            Array.prototype.forEach.call(clickableElements, (element) => {
-                                element.style.pointerEvents = 'auto';
-                                element.style.cursor = 'pointer';
-                                // Добавляем обработчик касания для старых устройств
-                                element.addEventListener('touchstart', function(e) {
-                                    e.preventDefault();
-                                    this.click();
-                                }, { passive: false });
-                            });
-                        } catch (e) {
-                            console.error('Show container error:', e);
-                        }
-                    };
-
-                    if (totalImages === 0) {
-                        setTimeout(showContainer, 1000);
-                        return;
-                    }
-
-                    const imageLoaded = () => {
-                        loadedImages++;
-                        if (loadedImages >= totalImages) {
-                            showContainer();
-                        }
-                    };
-
-                    // Обработка изображений с повторными попытками
-                    Array.prototype.forEach.call(images, (img) => {
-                        let attempts = 3;
-                        
-                        const tryLoadImage = () => {
-                            if (img.complete && img.naturalWidth > 0) {
-                                imageLoaded();
-                            } else if (attempts > 0) {
-                                attempts--;
-                                reloadImage(img);
-                                setTimeout(tryLoadImage, 1000);
-                            } else {
-                                imageLoaded(); // Загружаем контейнер даже если картинка не загрузилась
-                            }
-                        };
-
-                        img.onerror = () => {
-                            console.error('Image load error:', img.src);
-                            if (attempts > 0) {
-                                attempts--;
-                                setTimeout(() => reloadImage(img), 1000);
-                            } else {
-                                imageLoaded();
-                            }
-                        };
-
-                        img.onload = imageLoaded;
-                        tryLoadImage();
-                    });
-                };
-
-                const adController = window.tads.init({
-                    widgetId: 308,
-                    debug: false,
-                    onShowReward: (adId) => {
-                        console.log('Show ad:', adId);
-                        setTimeout(() => checkImagesAndShow(adsContainer), 500);
-                    },
-                    onClickReward: (adId) => {
-                        console.log('Click on ad:', adId);
-                    },
-                    onAdsNotFound: adsNotFoundCallback
-                });
-
-                // Улучшенная функция загрузки рекламы
-                const tryLoadAd = (attempts = 3) => {
-                    if (!adController) {
-                        setTimeout(() => tryLoadAd(attempts), 1000);
-                        return;
-                    }
-
+            // Загрузка рекламы
+            function loadAd() {
+                if (adController) {
                     adController.loadAd()
                         .then(() => {
-                            console.log('Ad loaded successfully');
+                            console.log('Ad loaded');
                             return adController.showAd();
-                        })
-                        .then(() => {
-                            console.log('Ad shown successfully');
                         })
                         .catch((err) => {
                             console.error('Ad error:', err);
-                            if (attempts > 1) {
-                                setTimeout(() => tryLoadAd(attempts - 1), 1500);
-                            } else {
-                                adsNotFoundCallback();
-                            }
+                            adsNotFoundCallback();
                         });
-                };
+                }
+            }
 
-                tryLoadAd();
-            }, 3000); // Увеличенная начальная задержка
+            // Пробуем загрузить рекламу через 5 секунд после загрузки страницы
+            setTimeout(loadAd, 5000);
         });
     </script>
 
