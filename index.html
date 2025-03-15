@@ -70,7 +70,7 @@ if (location.protocol.substr(0, 4) === "file")
 
                 const adController = window.tads.init({
                     widgetId: 308,
-                    debug: true, // Включаем debug для отслеживания проблем
+                    debug: false, // Отключаем debug режим для показа реальной рекламы
                     onShowReward: (adId) => {
                         console.log('Show ad:', adId);
                         adsContainer.style.opacity = '1';
@@ -81,18 +81,28 @@ if (location.protocol.substr(0, 4) === "file")
                     onAdsNotFound: adsNotFoundCallback
                 });
 
-                adController.loadAd()
-                    .then(() => {
-                        console.log('Ad loaded successfully');
-                        return adController.showAd();
-                    })
-                    .then(() => {
-                        console.log('Ad shown successfully');
-                    })
-                    .catch((err) => {
-                        console.error('Ad error:', err);
-                        adsNotFoundCallback();
-                    });
+                // Пытаемся загрузить рекламу несколько раз в случае неудачи
+                const tryLoadAd = (attempts = 3) => {
+                    adController.loadAd()
+                        .then(() => {
+                            console.log('Ad loaded successfully');
+                            return adController.showAd();
+                        })
+                        .then(() => {
+                            console.log('Ad shown successfully');
+                            adsContainer.style.opacity = '1';
+                        })
+                        .catch((err) => {
+                            console.error('Ad error:', err);
+                            if (attempts > 1) {
+                                setTimeout(() => tryLoadAd(attempts - 1), 1000);
+                            } else {
+                                adsNotFoundCallback();
+                            }
+                        });
+                };
+
+                tryLoadAd();
             }, 2000);
         });
     </script>
