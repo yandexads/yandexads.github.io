@@ -80,16 +80,62 @@ if (location.protocol.substr(0, 4) === "file")
 
                 const adController = window.tads.init({
                     widgetId: 308,
-                    debug: false, // Отключаем debug режим для показа реальной рекламы
+                    debug: false,
                     onShowReward: (adId) => {
                         console.log('Show ad:', adId);
-                        adsContainer.style.opacity = '1';
+                        // Проверяем загрузку изображений перед показом
+                        checkImagesAndShow(adsContainer);
                     },
                     onClickReward: (adId) => {
                         console.log('Click on ad:', adId);
                     },
                     onAdsNotFound: adsNotFoundCallback
                 });
+
+                // Функция проверки загрузки изображений
+                const checkImagesAndShow = (container) => {
+                    const images = container.getElementsByTagName('img');
+                    let loadedImages = 0;
+                    const totalImages = images.length;
+
+                    if (totalImages === 0) {
+                        // Если изображений нет, показываем контейнер через небольшую задержку
+                        setTimeout(() => {
+                            container.style.opacity = '1';
+                        }, 500);
+                        return;
+                    }
+
+                    // Функция для проверки загрузки каждого изображения
+                    const imageLoaded = () => {
+                        loadedImages++;
+                        if (loadedImages === totalImages) {
+                            // Все изображения загружены
+                            container.style.opacity = '1';
+                            
+                            // Добавляем обработчик кликов
+                            container.style.cursor = 'pointer';
+                            const links = container.getElementsByTagName('a');
+                            for (let link of links) {
+                                link.style.pointerEvents = 'auto';
+                                link.style.cursor = 'pointer';
+                            }
+                        }
+                    };
+
+                    // Проверяем каждое изображение
+                    for (let img of images) {
+                        if (img.complete) {
+                            imageLoaded();
+                        } else {
+                            img.addEventListener('load', imageLoaded);
+                            img.addEventListener('error', () => {
+                                console.error('Image load error:', img.src);
+                                imageLoaded(); // Считаем даже ошибочные изображения
+                            });
+                        }
+                    }
+                };
 
                 // Пытаемся загрузить рекламу несколько раз в случае неудачи
                 const tryLoadAd = (attempts = 3) => {
@@ -100,7 +146,7 @@ if (location.protocol.substr(0, 4) === "file")
                         })
                         .then(() => {
                             console.log('Ad shown successfully');
-                            adsContainer.style.opacity = '1';
+                            // Не устанавливаем здесь opacity, это будет сделано после проверки изображений
                         })
                         .catch((err) => {
                             console.error('Ad error:', err);
